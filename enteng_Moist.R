@@ -1,9 +1,5 @@
-library(matlab)
-library(fields)
-library(maps)
 rm(list = ls())
-
-
+setwd("~/THESIS/Quality_control/data/")
 load("../data/data_moist.Rda")
 lon = data_moist$lon
 lat = data_moist$lat
@@ -15,15 +11,27 @@ qvm = data_moist$qvm
 qu = data_moist$qu
 dtm = data_moist$dtm
 i_m = data_moist$i_m
-
+data_dinamis = list(lon,lat,aveq,avequ,avequ)
+# save(file = "../data/data_dinamis.Rda" ,data_dinamis)
 
 source("../code/plot_arah.R")
+rnglev = list()
+for(i in 1:11){
+  rnglev[[i]] =   list(range(aveq[[i]][!is.na(aveq[[i]])]),
+                       range(aveq[[i+1]][!is.na(aveq[[i+1]])]))
+}
+rnglev = unlist(rnglev)
+rnglev = range(rnglev)
+
 mo_bulan = function(pilihbulan){
-  cco = colorRampPalette(c("pink","orange","white","green","darkgreen","darkgrey","darkgreen"))
+  cco = colorRampPalette(c("darkred","white","darkblue","darkblue"))
   var = aveq[[pilihbulan]]
   var[is.na(var)] = 0
-  filled.contour(lon,lat,var,col = cco(100),axes = T,
-                 levels = seq(-0.0002635031,0.0004784743,length=90),
+  # x11()
+  filled.contour(lon,lat,var*10000,col = cco(40),axes = T,
+                 levels = seq((rnglev[1]*10000),(rnglev[2]*10000)+0.7,length=39),
+                 # levels = seq(-6,4,length=3),
+                 # nlevels = 89,
                  las=0,
                  plot.axes = { grid(col = "red");
                    axis(1,cex.axis = 1);
@@ -39,4 +47,4 @@ mo_bulan = function(pilihbulan){
   )
   
 }
-
+mo_bulan(9)
